@@ -1,0 +1,730 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #24445f;
+  background: #183344;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+/* ================= PAGE ================= */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100dvh;
+  padding:
+    max(1rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right))
+    max(1.25rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Darkens the background so the card remains the focus. */
+
+.backgroundOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 29, 42, 0.58),
+      rgba(8, 25, 38, 0.76)
+    ),
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(110, 181, 216, 0.18),
+      transparent 58%
+    );
+  backdrop-filter: blur(3px);
+}
+
+/* ================= SCENE ================= */
+
+.cardScene {
+  position: relative;
+  width: min(92vw, 420px);
+  height: calc(100dvh - 2rem);
+  max-height: 900px;
+  overflow: hidden;
+  perspective: 1800px;
+}
+
+/* ================= SHARED ENVELOPE ================= */
+
+.envelopeBack,
+.envelopeFront,
+.envelopeFlap,
+.envelopeMessage {
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  width: min(100%, 420px);
+  height: clamp(215px, 58vw, 285px);
+  transform: translate(50%, 0);
+  will-change: transform;
+}
+
+.cardScene[data-state="opening"] .envelopeBack,
+.cardScene[data-state="opening"] .envelopeFront,
+.cardScene[data-state="opening"] .envelopeFlap,
+.cardScene[data-state="opening"] .envelopeMessage {
+  transform: translate(50%, calc(100% + 3rem));
+  transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1) 2.5s;
+}
+
+.cardScene[data-state="open"] .envelopeBack,
+.cardScene[data-state="open"] .envelopeFront,
+.cardScene[data-state="open"] .envelopeFlap,
+.cardScene[data-state="open"] .envelopeMessage {
+  transform: translate(50%, calc(100% + 3rem));
+}
+
+.cardScene[data-state="closing"] .envelopeBack,
+.cardScene[data-state="closing"] .envelopeFront,
+.cardScene[data-state="closing"] .envelopeFlap,
+.cardScene[data-state="closing"] .envelopeMessage {
+  transform: translate(50%, 0);
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ================= ENVELOPE BACK ================= */
+
+.envelopeBack {
+  z-index: 2;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28), transparent 50%),
+    #a8d9f3;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 22px;
+}
+
+/* ================= MESSAGE CARD ================= */
+
+.messageCard {
+  position: absolute;
+  right: 50%;
+  bottom: 42px;
+  z-index: 3;
+  width: calc(100% - 18px);
+  height: min(78dvh, 730px);
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(202, 237, 255, 0.7),
+      transparent 38%
+    ),
+    rgba(250, 254, 255, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 26px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(50%, 73%) scale(0.91);
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+}
+
+.cardScene[data-state="opening"] .messageCard {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(50%, -92px) scale(1);
+  transition:
+    visibility 0s linear 0.85s,
+    opacity 0.3s ease 0.85s,
+    transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1s,
+    box-shadow 0.6s ease 1s;
+}
+
+.cardScene[data-state="open"] .messageCard {
+  z-index: 7;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(50%, -92px) scale(1);
+}
+
+.cardScene[data-state="closing"] .messageCard {
+  z-index: 3;
+  visibility: visible;
+  opacity: 0;
+  transform: translate(50%, 73%) scale(0.91);
+  transition:
+    transform 1.4s cubic-bezier(0.65, 0, 0.35, 1) 1s,
+    opacity 0.25s ease 2.2s,
+    visibility 0s linear 2.45s,
+    box-shadow 0.6s ease 1s;
+}
+
+/*
+  Four rows:
+  1. Heading
+  2. Flexible main image
+  3. Letter
+  4. Fixed-height bottom photos
+*/
+
+.messageContent {
+  display: grid;
+  grid-template-rows: auto minmax(100px, 1fr) auto clamp(48px, 9dvh, 84px);
+  gap: clamp(0.45rem, 1.3dvh, 0.8rem);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(0.9rem, 4vw, 1.6rem);
+  overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.insideHeader {
+  min-width: 0;
+  text-align: center;
+}
+
+.insideHeader h1 {
+  margin: 0;
+  color: #28516b;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.55rem, 6.5vw, 2.45rem);
+  line-height: 1.04;
+}
+
+.titleUnderline {
+  display: block;
+  width: 62px;
+  height: 2px;
+  margin: 0.6rem auto 0;
+  background: linear-gradient(90deg, transparent, #69b5de, transparent);
+}
+
+/* ================= MAIN PHOTO ================= */
+
+.mainPhoto {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #dff3fd;
+  border: 1px solid rgba(66, 151, 198, 0.35);
+  border-radius: 17px;
+}
+
+.mainPhoto img,
+.smallPhoto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mainPhoto img {
+  object-position: center 46%;
+}
+
+/* ================= LETTER ================= */
+
+.letter {
+  min-width: 0;
+  color: #456579;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(0.68rem, 2.4vw, 0.93rem);
+  line-height: 1.44;
+  text-align: center;
+}
+
+.letter p {
+  margin: 0 0 0.46rem;
+}
+
+.letter p:last-child {
+  margin-bottom: 0;
+}
+
+.letterGreeting {
+  color: #2f607e;
+  font-size: 1.08em;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.letterEnding {
+  color: #2c5f7d;
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* ================= BOTTOM PHOTOS ================= */
+
+.photoStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.smallPhoto {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #dff3fd;
+  border: 1px solid rgba(66, 151, 198, 0.35);
+  border-radius: 11px;
+}
+
+.smallPhoto img {
+  object-position: center;
+}
+
+/* ================= ENVELOPE FRONT ================= */
+
+.envelopeFront {
+  z-index: 4;
+  overflow: hidden;
+  border-radius: 22px;
+  pointer-events: none;
+}
+
+.envelopeFrontLeft,
+.envelopeFrontRight,
+.envelopeFrontBottom {
+  position: absolute;
+  inset: 0;
+}
+
+.envelopeFrontLeft {
+  z-index: 1;
+  background: linear-gradient(140deg, #c5eaff, #9dd4f1);
+  clip-path: polygon(0 0, 54% 50%, 0 100%);
+}
+
+.envelopeFrontRight {
+  z-index: 1;
+  background: linear-gradient(220deg, #bde6fb, #8ecbed);
+  clip-path: polygon(100% 0, 46% 50%, 100% 100%);
+}
+
+.envelopeFrontBottom {
+  z-index: 2;
+  background: linear-gradient(0deg, #9fd5f1, #c8ebfd);
+  clip-path: polygon(0 100%, 50% 43%, 100% 100%);
+}
+
+/* ================= FLAP ================= */
+
+.envelopeFlap {
+  z-index: 5;
+  display: grid;
+  padding: 0;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(155deg, #b7e5fb, #82c3e7);
+  border: 0;
+  border-radius: 22px 22px 0 0;
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  cursor: pointer;
+  transform: translate(50%, 0) rotateX(0deg);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  will-change: transform;
+}
+
+.cardScene[data-state="opening"] .envelopeFlap {
+  z-index: 2;
+  transform: translate(50%, 0) rotateX(180deg);
+  transition:
+    transform 1s cubic-bezier(0.65, 0, 0.35, 1),
+    translate 1s cubic-bezier(0.65, 0, 0.35, 1) 2.5s;
+}
+
+.cardScene[data-state="open"] .envelopeFlap {
+  z-index: 2;
+}
+
+.cardScene[data-state="closing"] .envelopeFlap {
+  z-index: 2;
+  transform: translate(50%, 0) rotateX(0deg);
+  transition:
+    transform 1s cubic-bezier(0.65, 0, 0.35, 1) 2.5s,
+    translate 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.envelopeFlap:disabled {
+  cursor: default;
+}
+
+.flapHeart {
+  margin-top: -24%;
+  font-size: 2rem;
+  text-shadow: 0 5px 15px rgba(40, 104, 140, 0.25);
+  transition: opacity 0.25s ease;
+}
+
+.cardScene[data-state="opening"] .flapHeart,
+.cardScene[data-state="open"] .flapHeart,
+.cardScene[data-state="closing"] .flapHeart {
+  opacity: 0;
+}
+
+/* ================= ENVELOPE MESSAGE ================= */
+
+.envelopeMessage {
+  z-index: 6;
+  height: auto;
+  padding: 3.5rem 2.5rem 0;
+  color: #315f7c;
+  text-align: center;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.envelopeMessage h2 {
+  margin: 0;
+  color: #27536f;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.4rem, 7vw, 2rem);
+  line-height: 1.05;
+}
+
+.envelopeMessage > span {
+  display: block;
+  margin-top: 1rem;
+  color: #4d7d99;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+.cardScene[data-state="opening"] .envelopeMessage,
+.cardScene[data-state="open"] .envelopeMessage {
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 1s cubic-bezier(0.65, 0, 0.35, 1) 2.5s;
+}
+
+.cardScene[data-state="closing"] .envelopeMessage {
+  opacity: 1;
+  transition:
+    opacity 0.35s ease 2.8s,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ================= CLOSE BUTTON ================= */
+
+.closeButton {
+  position: absolute;
+  top: max(0.9rem, env(safe-area-inset-top));
+  right: max(0.9rem, env(safe-area-inset-right));
+  z-index: 10;
+  padding: 0.65rem 0.95rem;
+  color: #315f7c;
+  background: rgba(250, 254, 255, 0.92);
+  border: 1px solid rgba(68, 138, 179, 0.24);
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.closeButtonVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.closeButton:disabled {
+  cursor: default;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes hintPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* ================= IPHONE ================= */
+
+@media (width <= 430px) {
+  .cardScene {
+    width: min(93vw, 390px);
+    height: calc(100dvh - 1.5rem);
+  }
+
+  .messageCard {
+    height: min(76dvh, 650px);
+  }
+
+  .cardScene[data-state="opening"] .messageCard,
+  .cardScene[data-state="open"] .messageCard {
+    transform: translate(50%, -82px) scale(1);
+  }
+
+  .envelopeBack,
+  .envelopeFront,
+  .envelopeFlap {
+    height: clamp(205px, 60vw, 245px);
+  }
+
+  .messageContent {
+    padding: 0.95rem;
+  }
+}
+
+/* ================= SHORT SCREENS ================= */
+
+@media (height <= 740px) {
+  .messageCard {
+    height: min(75dvh, 590px);
+  }
+
+  .cardScene[data-state="opening"] .messageCard,
+  .cardScene[data-state="open"] .messageCard {
+    transform: translate(50%, -68px) scale(1);
+  }
+
+  .messageContent {
+    grid-template-rows: auto minmax(80px, 1fr) auto 44px;
+    gap: 0.38rem;
+    padding: 0.78rem;
+  }
+
+  .insideHeader h1 {
+    font-size: 1.45rem;
+  }
+
+  .titleUnderline {
+    margin-top: 0.38rem;
+  }
+
+  .letter {
+    font-size: 0.65rem;
+    line-height: 1.3;
+  }
+
+  .letter p {
+    margin-bottom: 0.27rem;
+  }
+}
+
+/* ================= TABLET / DESKTOP ================= */
+
+@media (width >= 768px) {
+  .page {
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .cardScene {
+    width: min(92vw, 540px);
+    height: calc(100dvh - 3rem);
+    max-height: none;
+  }
+
+  .messageCard {
+    bottom: 0;
+    width: calc(100% - 24px);
+    height: min(92dvh, 850px);
+    border-radius: 30px;
+  }
+
+  .cardScene[data-state="opening"] .messageCard,
+  .cardScene[data-state="open"] .messageCard {
+    transform: translate(50%, 0) scale(1);
+  }
+
+  .envelopeBack,
+  .envelopeFront,
+  .envelopeFlap,
+  .envelopeMessage {
+    width: min(100%, 520px);
+    height: clamp(270px, 35vw, 330px);
+  }
+
+  .messageContent {
+    grid-template-rows:
+      auto
+      minmax(180px, 1fr)
+      auto
+      clamp(82px, 10dvh, 100px);
+    gap: clamp(0.5rem, 1dvh, 0.75rem);
+    padding: clamp(1rem, 2.2vw, 1.4rem);
+  }
+
+  .insideHeader h1 {
+    font-size: clamp(2rem, 3.7vw, 2.65rem);
+  }
+
+  .titleUnderline {
+    width: 82px;
+    margin-top: 0.5rem;
+  }
+
+  .mainPhoto {
+    min-height: 180px;
+  }
+
+  .letter {
+    font-size: clamp(0.74rem, 1.2vw, 0.88rem);
+    line-height: 1.38;
+  }
+
+  .letter p {
+    margin-bottom: 0.3rem;
+  }
+
+  .photoStrip {
+    gap: 0.65rem;
+  }
+
+  .smallPhoto {
+    border-radius: 13px;
+  }
+}
+
+/* ================= LARGE DESKTOP ================= */
+
+@media (width >= 1200px) and (height >= 820px) {
+  .cardScene {
+    width: 560px;
+    height: calc(100dvh - 3rem);
+  }
+
+  .messageCard {
+    width: 540px;
+    height: min(92dvh, 880px);
+  }
+
+  .messageContent {
+    grid-template-rows:
+      auto
+      minmax(220px, 1fr)
+      auto
+      105px;
+    gap: 0.7rem;
+    padding: 1.35rem 1.6rem;
+  }
+
+  .insideHeader h1 {
+    font-size: 2.8rem;
+  }
+
+  .mainPhoto {
+    min-height: 220px;
+  }
+
+  .letter {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .photoStrip {
+    height: 105px;
+  }
+
+  .envelopeBack,
+  .envelopeFront,
+  .envelopeFlap,
+  .envelopeMessage {
+    width: 560px;
+    height: 350px;
+  }
+}
+
+/* ================= VERY TALL DESKTOP ================= */
+
+@media (width >= 1200px) and (height >= 950px) {
+  .messageCard {
+    height: min(92dvh, 900px);
+  }
+
+  .messageContent {
+    grid-template-rows:
+      auto
+      minmax(270px, 1fr)
+      auto
+      115px;
+    padding: 1.5rem 1.75rem;
+  }
+
+  .mainPhoto {
+    min-height: 270px;
+  }
+
+  .letter {
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .photoStrip {
+    height: 115px;
+  }
+}
+
+/* ================= REDUCED MOTION ================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}
