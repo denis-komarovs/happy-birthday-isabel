@@ -54,8 +54,6 @@ function App() {
   useEffect(() => clearTimers, []);
 
   const isOpen = cardState === "opening" || cardState === "open";
-  const isAnimating = cardState === "opening" || cardState === "closing";
-
   return (
     <main className="page" style={{ backgroundImage: `url(${backgroundPhoto})` }}>
       <div className="backgroundOverlay" aria-hidden="true" />
