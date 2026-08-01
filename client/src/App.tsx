@@ -78,22 +78,13 @@ function App() {
               <p>
                 Happy birthday to the most incredible person I know. I&apos;m so
                 grateful that you&apos;re in my life, and I honestly couldn&apos;t
-                ask for anyone better.
-              </p>
-            
-              <p>
-                Thank you for every laugh, every memory, and every moment we share.
-                Being with you is my favourite place to be.
-              </p>
-            
-              <p>
+                ask for anyone better. Thank you for every laugh, every memory, and every moment we share. Being with you is my favourite place to be.
                 I hope your 21st year brings you happiness, success, and countless
                 reasons to smile. You deserve nothing but the best. I love you.
               </p>
             
               <p className="letterEnding">
                 Happy Birthday. ❤️
-                <br />
                 <br />
                 Love always,
                 <br />
