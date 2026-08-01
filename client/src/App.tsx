@@ -72,45 +72,34 @@ function App() {
               <img src={mainPhoto} alt="Denis and Isabel together" />
             </div>
 
-        <div className="letter">
-          <p className="letterGreeting">Dear Isabel,</p>
-        
-          <p>
-            Happy birthday to the most incredible person I know. I honestly
-            don&apos;t know what I did to deserve someone as amazing as you, but
-            I&apos;m grateful every single day that you&apos;re in my life. You
-            mean more to me than I could ever put into words.
-          </p>
-        
-          <p>
-            I love every moment we spend together. Whether we&apos;re out doing
-            something exciting or simply enjoying each other&apos;s company, every
-            moment with you becomes a memory I&apos;ll always cherish. Being with
-            you is my favourite place to be :&gt;.
-          </p>
-        
-          <p>
-            No matter where life takes us, I&apos;ll always treasure everything
-            we&apos;ve shared so far and look forward to being with you. I hope
-            your 21st year is filled with memories, happiness &amp; success. You
-            deserve every wonderful thing that comes your way, and I hope this
-            year brings you nothing but reasons to smile.
-          </p>
-        
-          <p className="letterEnding">
-            Thank you for being you. Thank you for making my life brighter,
-            happier, and more meaningful than I ever thought possible. I love
-            you more than you&apos;ll ever know.
-            <br />
-            <br />
-            Happy Birthday. ❤️
-            <br />
-            <br />
-            Love always,
-            <br />
-            Denis
-          </p>
-        </div>
+            <div className="letter">
+              <p className="letterGreeting">Dear Isabel,</p>
+            
+              <p>
+                Happy birthday to the most incredible person I know. I&apos;m so
+                grateful that you&apos;re in my life, and I honestly couldn&apos;t
+                ask for anyone better.
+              </p>
+            
+              <p>
+                Thank you for every laugh, every memory, and every moment we share.
+                Being with you is my favourite place to be.
+              </p>
+            
+              <p>
+                I hope your 21st year brings you happiness, success, and countless
+                reasons to smile. You deserve nothing but the best. I love you.
+              </p>
+            
+              <p className="letterEnding">
+                Happy Birthday. ❤️
+                <br />
+                <br />
+                Love always,
+                <br />
+                Denis
+              </p>
+            </div>
 
             <div className="photoStrip">
               {photos.map((photo) => (
